@@ -1,0 +1,44 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row mt-5">
+  <div class="col-10 offset-1 col-md-6 offset-md-3 col-lg-4 offset-lg-4">
+    <h2 class="mb-4 text-center">Login</h2>
+
+    <form action="/login" method="POST">
+      <div class="mb-3">
+       <label for="username" class="form-label">Username</label>
+        <input
+          type="text"
+          class="form-control"
+          id="username"
+          name="username"
+          placeholder="Enter username"
+          required
+          autocomplete="username"
+        >
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          name="password"
+          placeholder="Enter password"
+          required
+          autocomplete="current-password"
+        >
+      </div>
+
+      <div class="d-grid">
+        <button type="submit" class="btn btn-dark">Login</button>
+      </div>
+    </form>
+
+    <p class="text-center mt-3">
+      Don’t have an account?
+      <a href="/signup">Sign up</a>
+    </p>
+  </div>
+</div>
