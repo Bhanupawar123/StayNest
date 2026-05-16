@@ -1,0 +1,240 @@
+<% layout("/layouts/boilerplate") %>
+
+<style>
+  /* ===== SEARCH BAR ===== */
+  .search-container {
+    max-width: 600px;
+    margin: 20px auto;
+  }
+
+  .search-bar {
+    display: flex;
+    border: 1px solid #ddd;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: box-shadow 0.2s;
+  }
+
+  .search-bar:focus-within {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+
+  .search-bar input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 14px 20px;
+    font-size: 0.95rem;
+    background: white;
+  }
+
+  .search-bar button {
+    background: #FF385C;
+    border: none;
+    color: white;
+    padding: 14px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s;
+  }
+
+  .search-bar button:hover { background: #e0264a; }
+
+  /* ===== FILTERS ===== */
+  .filters-container {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 16px 0;
+    scrollbar-width: none;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 16px;
+  }
+
+  .filters-container::-webkit-scrollbar { display: none; }
+
+  .filter-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #717171;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .filter-btn:hover { color: #222; border-bottom-color: #222; }
+  .filter-btn.active { color: #222; border-bottom-color: #222; font-weight: 600; }
+
+  .filter-icon { font-size: 1.4rem; }
+
+  /* ===== TAX SWITCH ===== */
+  .tax-switch-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .tax-label { font-size: 0.85rem; font-weight: 500; color: #222; }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+  }
+
+  .switch input { opacity: 0; width: 0; height: 0; }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 26px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px; width: 20px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+  }
+
+  input:checked + .slider { background-color: #222; }
+  input:checked + .slider:before { transform: translateX(22px); }
+
+  /* ===== PRICE WITH TAX ===== */
+  .price-with-tax { display: none; }
+  .tax-active .price-with-tax { display: block; }
+  .tax-active .price-without-tax { display: none; }
+
+  /* ===== NO RESULTS ===== */
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: #717171;
+  }
+
+  .no-results h3 { font-size: 1.3rem; margin-bottom: 8px; color: #222; }
+</style>
+
+<!-- Search Bar -->
+<div class="search-container">
+  <form action="/listings" method="GET" class="search-bar">
+    <input
+      type="text"
+      name="search"
+      placeholder="Search destinations..."
+      value="<%= search %>"
+    />
+    <input type="hidden" name="category" value="<%= category %>" />
+    <button type="submit">🔍</button>
+  </form>
+</div>
+
+<!-- Filters + Tax Switch -->
+<div class="filters-container">
+  <% const categories = [
+    { name: "all", icon: "🌍", label: "All" },
+    { name: "Trending", icon: "🔥", label: "Trending" },
+    { name: "Beach", icon: "🏖️", label: "Beach" },
+    { name: "Mountains", icon: "⛰️", label: "Mountains" },
+    { name: "Camping", icon: "🏕️", label: "Camping" },
+    { name: "Arctic", icon: "❄️", label: "Arctic" },
+    { name: "Rooms", icon: "🛏️", label: "Rooms" },
+    { name: "Iconic Cities", icon: "🏙️", label: "Iconic Cities" },
+    { name: "Farms", icon: "🌾", label: "Farms" },
+  ]; %>
+
+  <% categories.forEach(cat => { %>
+    <a
+      href="/listings?category=<%= cat.name %>&search=<%= search %>"
+      class="filter-btn <%= category === cat.name ? 'active' : '' %>"
+    >
+      <span class="filter-icon"><%= cat.icon %></span>
+      <span><%= cat.label %></span>
+    </a>
+  <% }) %>
+
+  <!-- Tax Switch -->
+  <div class="tax-switch-container">
+    <span class="tax-label">Display total before taxes</span>
+    <label class="switch">
+      <input type="checkbox" id="taxToggle" />
+      <span class="slider"></span>
+    </label>
+  </div>
+</div>
+
+<!-- Listings Grid -->
+<% if (allListings.length === 0) { %>
+  <div class="no-results">
+    <h3>No listings found</h3>
+    <p>Try a different search or filter</p>
+    <a href="/listings" class="btn btn-dark mt-3">Clear Filters</a>
+  </div>
+<% } else { %>
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-4" id="listingsGrid">
+    <% allListings.forEach((listing) => { %>
+      <div class="col">
+        <a href="/listings/<%= listing._id %>/show" class="listing-link text-decoration-none text-dark">
+          <div class="card h-100 border-0">
+            <img
+              src="<%= listing.image?.url || '/images/default.jpg' %>"
+              class="card-img-top rounded-3"
+              alt="listing image"
+              style="height: 20rem; object-fit: cover;"
+              onerror="this.onerror=null;this.src='/images/default.jpg';"
+            >
+            <div class="card-body px-1">
+              <h5 class="card-title fw-semibold"><%= listing.title %></h5>
+              <p class="card-text text-muted mb-1"><%= listing.location %>, <%= listing.country %></p>
+
+              <!-- Price without tax -->
+              <p class="card-text price-without-tax">
+                <strong>&#8377;<%= listing.price.toLocaleString('en-IN') %></strong> / night
+              </p>
+
+              <!-- Price with tax (18% GST) -->
+              <p class="card-text price-with-tax">
+                <strong>&#8377;<%= Math.round(listing.price * 1.18).toLocaleString('en-IN') %></strong> / night
+                <small class="text-muted">(incl. 18% GST)</small>
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+    <% }) %>
+  </div>
+<% } %>
+
+<script>
+  // Tax Switch
+  const taxToggle = document.getElementById('taxToggle');
+  const grid = document.getElementById('listingsGrid');
+
+  taxToggle.addEventListener('change', () => {
+    if (taxToggle.checked) {
+      grid.classList.add('tax-active');
+    } else {
+      grid.classList.remove('tax-active');
+    }
+  });
+</script>

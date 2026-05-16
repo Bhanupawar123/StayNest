@@ -1,0 +1,70 @@
+<%layout("/layouts/boilerplate")%>
+<div class="row">
+  <h3>Create Account</h3>
+  <div class="col-8 offset-2">
+    <form method="POST" action="/signup" novalidate class="needs-validation">
+      <div class="mb-3">
+        <label for="username" class="form-label">Full Name</label>
+        <input 
+          name="username" 
+          id="username"
+          placeholder="Enter full name" 
+          type="text" 
+          class="form-control"
+          autocomplete="name"
+          required />
+        <div class="valid-feedback">Name looks good!</div>
+        <div class="invalid-feedback">Please enter your full name</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input 
+          name="email" 
+          id="email"
+          placeholder="Enter email" 
+          type="email" 
+          class="form-control"
+          autocomplete="email"
+          required />
+        <div class="valid-feedback">Email looks good!</div>
+        <div class="invalid-feedback">Please enter valid email</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input 
+          name="password" 
+          id="password"
+          placeholder="Enter password" 
+          type="password" 
+          class="form-control"
+          autocomplete="new-password"
+          minlength="6"
+          required />
+        <div class="valid-feedback">Password looks good!</div>
+        <div class="invalid-feedback">Password must be at least 6 characters</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <input 
+          name="confirmPassword" 
+          id="confirmPassword"
+          placeholder="Confirm password" 
+          type="password" 
+          class="form-control"
+          autocomplete="new-password"
+          required />
+        <div class="valid-feedback">Passwords match!</div>
+        <div class="invalid-feedback">Passwords do not match</div>
+      </div>
+
+      <button class="btn btn-dark w-100">Sign Up</button>
+    </form>
+
+    <div class="text-center mt-3">
+      <p>Already have an account? <a href="/login">Login here</a></p>
+    </div>
+  </div>
+</div>
